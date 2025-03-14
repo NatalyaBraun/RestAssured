@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -82,12 +83,16 @@ public class GetListResourseTest {
                 .jsonPath();
         response.prettyPrint();
 
-        Assertions.assertEquals("2", response.get("page").toString());
-        Assertions.assertEquals("6", response.get("per_page").toString());
-        Assertions.assertEquals("12", response.get("total").toString());
-        Assertions.assertEquals("2", response.get("total_pages").toString());
-        Assertions.assertNotEquals("0", response.get("data").toString().length());
-        Assertions.assertEquals("blue iris", response.get("data[2].name").toString());
+        SoftAssertions softAssert = new SoftAssertions();
+
+        softAssert.assertThat(response.get("page").toString()).isEqualTo("2");
+        softAssert.assertThat(response.get("per_page").toString()).isEqualTo("6");
+        softAssert.assertThat(response.get("total").toString()).isEqualTo("12");
+        softAssert.assertThat(response.get("total_pages").toString()).isEqualTo("2");
+        softAssert.assertThat(response.get("data").toString().length()).isNotEqualTo("0");
+        softAssert.assertThat(response.get("data[2].name").toString()).isEqualTo("blue iris");
+
+        softAssert.assertAll();
     }
 
     @Test
